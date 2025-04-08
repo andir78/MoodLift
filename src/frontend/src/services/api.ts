@@ -6,12 +6,10 @@ const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 export interface GenerateImageRequest {
   mood: string;
   size: number;
-  grayscale: boolean;
 }
 
 export interface GenerateImageResponse {
-  imageUrl: string;
-  // Add any other response fields that the backend will return
+  art: string;
 }
 
 export const generateImage = async (params: GenerateImageRequest): Promise<GenerateImageResponse> => {
@@ -21,28 +19,6 @@ export const generateImage = async (params: GenerateImageRequest): Promise<Gener
   } catch (error) {
     if (axios.isAxiosError(error)) {
       throw new Error(error.response?.data?.message || 'Failed to generate image');
-    }
-    throw error;
-  }
-};
-
-export interface GenerateMoodRequest {
-  mood: string;
-  size: number;
-  grayscale: boolean;
-}
-
-export interface GenerateMoodResponse {
-  art: string;
-}
-
-export const generateMoodArt = async (params: GenerateMoodRequest): Promise<GenerateMoodResponse> => {
-  try {
-    const response = await axios.post(`${API_BASE_URL}/api/ascii-art`, params);
-    return response.data;
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      throw new Error(error.response?.data?.message || 'Failed to generate mood art');
     }
     throw error;
   }

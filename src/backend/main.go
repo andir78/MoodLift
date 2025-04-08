@@ -111,7 +111,7 @@ func handleGenerateASCIIArt(c *gin.Context, imgGen *generator.ImageGenerator) {
 	}
 
 	// Generate ASCII art using Gemini API
-	art, err := imgGen.GenerateASCIIArt(req.Mood)
+	art, err := imgGen.GenerateASCIIArt(req.Mood, req.Size)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate ASCII art: " + err.Error()})
 		return

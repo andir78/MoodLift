@@ -89,9 +89,12 @@ func (g *ImageGenerator) GenerateImage(mood string, size int, grayscale bool) (s
 }
 
 // GenerateASCIIArt creates ASCII art based on mood using Gemini API
-func (g *ImageGenerator) GenerateASCIIArt(mood string) (string, error) {
+func (g *ImageGenerator) GenerateASCIIArt(mood string, size int) (string, error) {
+	// Calculate number of lines based on size (10-100 lines)
+	numLines := 10 + int(float64(size)/100.0*90) // Maps 0-100 to 10-100 lines
+
 	// Create the prompt for Gemini
-	prompt := fmt.Sprintf("Generate a simple ASCII art face that represents the mood: %s. The ASCII art should be small, simple, and fit within 10 lines. Use only basic ASCII characters like |, -, /, \\, ., ', etc.", mood)
+	prompt := fmt.Sprintf("Generate ONLY ASCII art that represents the mood: %s. Return ONLY the ASCII art characters, with NO additional text, descriptions, or explanations. Use only basic ASCII characters like |, -, /, \\, ., ', etc. The art should be EXACTLY %d lines tall. Do not include any text before or after the ASCII art.", mood, numLines)
 
 	// Create the request body
 	reqBody := GeminiRequest{
@@ -145,11 +148,11 @@ func (g *ImageGenerator) GenerateASCIIArt(mood string) (string, error) {
 // Helper functions for image generation
 func generateMoodColor(mood string) color.Color {
 	colors := map[string]color.RGBA{
-		"happy":    {R: 255, G: 255, B: 0, A: 255},   // Yellow
-		"sad":      {R: 0, G: 0, B: 255, A: 255},     // Blue
-		"angry":    {R: 255, G: 0, B: 0, A: 255},     // Red
-		"calm":     {R: 0, G: 255, B: 0, A: 255},     // Green
-		"excited":  {R: 255, G: 0, B: 255, A: 255},   // Magenta
+		"happy":   {R: 255, G: 255, B: 0, A: 255}, // Yellow
+		"sad":     {R: 0, G: 0, B: 255, A: 255},   // Blue
+		"angry":   {R: 255, G: 0, B: 0, A: 255},   // Red
+		"calm":    {R: 0, G: 255, B: 0, A: 255},   // Green
+		"excited": {R: 255, G: 0, B: 255, A: 255}, // Magenta
 	}
 
 	if c, exists := colors[mood]; exists {

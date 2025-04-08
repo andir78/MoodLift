@@ -1,14 +1,13 @@
 /// <reference types="react" />
 import { useState, ChangeEvent } from 'react';
 import './App.css'; // Import the external CSS file for styling
-import { generateMoodArt } from './services/api';
+import { generateImage } from './services/api';
 
 type MoodType = 'Happy' | 'Calm' | 'Excited' | '';
 
 const App = () => {
   const [mood, setMood] = useState<MoodType>('');
-  const [size, setSize] = useState<number>(50); // Default size in percentage
-  const [grayscale, setGrayscale] = useState<boolean>(false);
+  const [size, setSize] = useState<number>(50);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [asciiArt, setAsciiArt] = useState<string | null>(null);
@@ -22,11 +21,7 @@ const App = () => {
     setSize(Number(event.target.value));
   };
 
-  const handleGrayscaleChange = (event: ChangeEvent<HTMLInputElement>): void => {
-    setGrayscale(event.target.checked);
-  };
-
-  const handleGenerateArt = async (): Promise<void> => {
+  const handleGenerateImage = async (): Promise<void> => {
     if (!mood) {
       setError('Please select a mood first');
       return;
@@ -37,14 +32,13 @@ const App = () => {
     setAsciiArt(null);
 
     try {
-      const response = await generateMoodArt({
+      const response = await generateImage({
         mood,
         size,
-        grayscale,
       });
       setAsciiArt(response.art);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to generate mood art');
+      setError(err instanceof Error ? err.message : 'Failed to generate ASCII art');
     } finally {
       setIsLoading(false);
     }
@@ -53,66 +47,52 @@ const App = () => {
   return (
     <div className='App'>
       <div className='header'>
-        <h1>MoodLift</h1>
-        <p>Generate mood-based ASCII art.</p>
+        <h1>Create Your Mood ASCII Art</h1>
+        <p>Choose your mood and generate your personalized ASCII art.</p>
       </div>
 
-      <div className='content'>
-        <div className='section'>
-          <h2>Select Your Mood</h2>
-          <div className='mood-selector column'>
-            <div className={`mood-option ${mood === 'Happy' ? 'selected' : ''}`} onClick={() => handleMoodSelect('Happy')}>
-              <span>🙂 Happy</span>
-            </div>
-            <div className={`mood-option ${mood === 'Calm' ? 'selected' : ''}`} onClick={() => handleMoodSelect('Calm')}>
-              <span>😌 Calm</span>
-            </div>
-            <div className={`mood-option ${mood === 'Excited' ? 'selected' : ''}`} onClick={() => handleMoodSelect('Excited')}>
-              <span>🤩 Excited</span>
-            </div>
-          </div>
+      <div className='mood-selector column'>
+        <div className={`mood-option ${mood === 'Happy' ? 'selected' : ''}`} onClick={() => handleMoodSelect('Happy')}>
+          <span>🙂 Happy</span>
+        </div>
+        <div className={`mood-option ${mood === 'Calm' ? 'selected' : ''}`} onClick={() => handleMoodSelect('Calm')}>
+          <span>😌 Calm</span>
+        </div>
+        <div className={`mood-option ${mood === 'Excited' ? 'selected' : ''}`} onClick={() => handleMoodSelect('Excited')}>
+          <span>🤩 Excited</span>
+        </div>
+      </div>
 
-          <div className='image-settings'>
-            <div className='slider-container'>
-              <label>Size: {size}%</label>
-              <input
-                type='range'
-                min='0'
-                max='100'
-                value={size}
-                onChange={handleSizeChange}
-              />
-            </div>
-
-            <div className='grayscale-checkbox'>
-              <input
-                type='checkbox'
-                checked={grayscale}
-                onChange={handleGrayscaleChange}
-              />
-              <label>Grayscale</label>
-            </div>
-          </div>
-
-          <div className='generate-btn-container'>
-            <button 
-              className='generate-btn' 
-              onClick={handleGenerateArt}
-              disabled={isLoading || !mood}
-            >
-              {isLoading ? 'Generating...' : 'Generate Mood Art'}
-            </button>
-          </div>
-
-          {asciiArt && (
-            <div className='ascii-art-container'>
-              <pre className='ascii-art'>{asciiArt}</pre>
-            </div>
-          )}
+      <div className='image-settings'>
+        <div className='slider-container'>
+          <label>Size: {size}% ({10 + Math.floor(size * 0.9)} lines)</label>
+          <input
+            type='range'
+            min='0'
+            max='100'
+            value={size}
+            onChange={handleSizeChange}
+          />
         </div>
       </div>
 
       {error && <div className='error-message'>{error}</div>}
+
+      <div className='generate-btn-container'>
+        <button 
+          className='generate-btn' 
+          onClick={handleGenerateImage}
+          disabled={isLoading || !mood}
+        >
+          {isLoading ? 'Generating...' : 'Generate ASCII Art'}
+        </button>
+      </div>
+
+      {asciiArt && (
+        <div className='ascii-art-container'>
+          <pre className='ascii-art'>{asciiArt}</pre>
+        </div>
+      )}
     </div>
   );
 };
