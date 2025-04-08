@@ -205,9 +205,9 @@ p {
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  max-width: 600px;
+  max-width: 800px;
   width: 100%;
-  overflow-x: auto;
+  overflow: visible;
 }
 
 .ascii-art {
@@ -218,4 +218,7 @@ p {
   line-height: 1.5;
   margin: 0;
   text-align: left;
+  overflow: visible;
+  display: block;
+  width: 100%;
 }
