@@ -1,6 +1,7 @@
 /// <reference types="react" />
 import { useState, ChangeEvent } from 'react';
 import './App.css'; // Import the external CSS file for styling
+import { generateImage } from './services/api';
 
 type MoodType = 'Happy' | 'Calm' | 'Excited' | '';
 
@@ -8,9 +9,13 @@ const App = () => {
   const [mood, setMood] = useState<MoodType>('');
   const [size, setSize] = useState<number>(50); // Default size in percentage
   const [grayscale, setGrayscale] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(null);
 
   const handleMoodSelect = (selectedMood: MoodType): void => {
     setMood(selectedMood);
+    setError(null);
   };
 
   const handleSizeChange = (event: ChangeEvent<HTMLInputElement>): void => {
@@ -21,10 +26,28 @@ const App = () => {
     setGrayscale(event.target.checked);
   };
 
-  const handleGenerateImage = (): void => {
-    alert(
-      `Generating image with mood: ${mood}, size: ${size}%, grayscale: ${grayscale}`
-    );
+  const handleGenerateImage = async (): Promise<void> => {
+    if (!mood) {
+      setError('Please select a mood first');
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+    setGeneratedImageUrl(null);
+
+    try {
+      const response = await generateImage({
+        mood,
+        size,
+        grayscale,
+      });
+      setGeneratedImageUrl(response.imageUrl);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to generate image');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -68,11 +91,27 @@ const App = () => {
         </div>
       </div>
 
+      {error && <div className='error-message'>{error}</div>}
+
       <div className='generate-btn-container'>
-        <button className='generate-btn' onClick={handleGenerateImage}>
-          Generate Image
+        <button 
+          className='generate-btn' 
+          onClick={handleGenerateImage}
+          disabled={isLoading || !mood}
+        >
+          {isLoading ? 'Generating...' : 'Generate Image'}
         </button>
       </div>
+
+      {generatedImageUrl && (
+        <div className='generated-image-container'>
+          <img 
+            src={generatedImageUrl} 
+            alt="Generated mood image" 
+            className='generated-image'
+          />
+        </div>
+      )}
     </div>
   );
 };
