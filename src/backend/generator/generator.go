@@ -1,132 +1,175 @@
 package generator
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"image"
 	"image/color"
-	"image/jpeg"
+	"image/draw"
+	"image/png"
 	"math/rand"
+	"net/http"
 	"os"
 	"path/filepath"
 	"time"
 )
 
-// ImageGenerator handles the generation of mood-based images
+// GeminiRequest represents the request body for Gemini API
+type GeminiRequest struct {
+	Contents []Content `json:"contents"`
+}
+
+type Content struct {
+	Parts []Part `json:"parts"`
+}
+
+type Part struct {
+	Text string `json:"text"`
+}
+
+// GeminiResponse represents the response from Gemini API
+type GeminiResponse struct {
+	Candidates []Candidate `json:"candidates"`
+}
+
+type Candidate struct {
+	Content Content `json:"content"`
+}
+
+// ImageGenerator handles image generation
 type ImageGenerator struct {
-	outputDir    string
-	geminiAPIKey string
+	outputDir string
+	apiKey    string
 }
 
 // NewImageGenerator creates a new ImageGenerator instance
-func NewImageGenerator(outputDir string, geminiAPIKey string) (*ImageGenerator, error) {
+func NewImageGenerator(outputDir string, apiKey string) (*ImageGenerator, error) {
 	if err := os.MkdirAll(outputDir, 0755); err != nil {
-		return nil, fmt.Errorf("failed to create output directory: %w", err)
+		return nil, err
 	}
-	return &ImageGenerator{
-		outputDir:    outputDir,
-		geminiAPIKey: geminiAPIKey,
-	}, nil
+	return &ImageGenerator{outputDir: outputDir, apiKey: apiKey}, nil
 }
 
-// GenerateImage creates a new image based on the given parameters
+// GenerateImage creates a new image based on mood
 func (g *ImageGenerator) GenerateImage(mood string, size int, grayscale bool) (string, error) {
-	// TODO: Implement Gemini AI integration
-	// For now, we'll keep the existing image generation logic
-	// but we have the API key available in g.geminiAPIKey
-
-	// Create a new image with the specified size
-	width := 300 * size / 100
-	height := 300 * size / 100
-	img := image.NewRGBA(image.Rect(0, 0, width, height))
+	// Create a new image
+	img := image.NewRGBA(image.Rect(0, 0, size, size))
 
 	// Generate colors based on mood
-	colors := getMoodColors(mood)
+	bgColor := generateMoodColor(mood)
+	draw.Draw(img, img.Bounds(), &image.Uniform{bgColor}, image.Point{}, draw.Src)
 
-	// Fill the image with a gradient based on the mood
-	drawMoodGradient(img, colors)
-
-	// Apply grayscale if requested
-	if grayscale {
-		applyGrayscale(img)
+	// Add some random shapes
+	rand.Seed(time.Now().UnixNano())
+	for i := 0; i < 5; i++ {
+		x := rand.Intn(size)
+		y := rand.Intn(size)
+		shapeColor := generateMoodColor(mood)
+		if grayscale {
+			shapeColor = colorToGrayscale(shapeColor)
+		}
+		drawShape(img, x, y, 20, shapeColor)
 	}
 
-	// Generate a unique filename
-	filename := fmt.Sprintf("%d.jpg", time.Now().UnixNano())
-	filepath := filepath.Join(g.outputDir, filename)
-
 	// Save the image
-	file, err := os.Create(filepath)
+	filename := fmt.Sprintf("mood_%s_%d.png", mood, time.Now().Unix())
+	path := filepath.Join(g.outputDir, filename)
+	file, err := os.Create(path)
 	if err != nil {
-		return "", fmt.Errorf("failed to create image file: %w", err)
+		return "", err
 	}
 	defer file.Close()
 
-	if err := jpeg.Encode(file, img, &jpeg.Options{Quality: 90}); err != nil {
-		return "", fmt.Errorf("failed to encode image: %w", err)
+	if err := png.Encode(file, img); err != nil {
+		return "", err
 	}
 
-	return filepath, nil
+	return path, nil
 }
 
-// getMoodColors returns a list of colors based on the mood
-func getMoodColors(mood string) []color.Color {
-	switch mood {
-	case "Happy":
-		return []color.Color{
-			color.RGBA{255, 223, 0, 255}, // Yellow
-			color.RGBA{255, 165, 0, 255}, // Orange
-			color.RGBA{255, 69, 0, 255},  // Red-Orange
-		}
-	case "Calm":
-		return []color.Color{
-			color.RGBA{135, 206, 235, 255}, // Sky Blue
-			color.RGBA{176, 224, 230, 255}, // Powder Blue
-			color.RGBA{173, 216, 230, 255}, // Light Blue
-		}
-	case "Excited":
-		return []color.Color{
-			color.RGBA{255, 0, 0, 255},   // Red
-			color.RGBA{255, 127, 0, 255}, // Orange
-			color.RGBA{255, 255, 0, 255}, // Yellow
-		}
-	default:
-		return []color.Color{
-			color.RGBA{128, 128, 128, 255}, // Gray
-			color.RGBA{192, 192, 192, 255}, // Silver
-			color.RGBA{169, 169, 169, 255}, // Dark Gray
-		}
+// GenerateASCIIArt creates ASCII art based on mood using Gemini API
+func (g *ImageGenerator) GenerateASCIIArt(mood string) (string, error) {
+	// Create the prompt for Gemini
+	prompt := fmt.Sprintf("Generate a simple ASCII art face that represents the mood: %s. The ASCII art should be small, simple, and fit within 10 lines. Use only basic ASCII characters like |, -, /, \\, ., ', etc.", mood)
+
+	// Create the request body
+	reqBody := GeminiRequest{
+		Contents: []Content{
+			{
+				Parts: []Part{
+					{
+						Text: prompt,
+					},
+				},
+			},
+		},
 	}
-}
 
-// drawMoodGradient fills the image with a gradient using the provided colors
-func drawMoodGradient(img *image.RGBA, colors []color.Color) {
-	bounds := img.Bounds()
-	width := bounds.Max.X
-	height := bounds.Max.Y
-
-	// Create a random seed for variation
-	rand.Seed(time.Now().UnixNano())
-
-	for y := 0; y < height; y++ {
-		for x := 0; x < width; x++ {
-			// Choose a random color from the mood colors
-			colorIndex := rand.Intn(len(colors))
-			img.Set(x, y, colors[colorIndex])
-		}
+	// Convert request body to JSON
+	jsonData, err := json.Marshal(reqBody)
+	if err != nil {
+		return "", fmt.Errorf("failed to marshal request: %w", err)
 	}
+
+	// Create HTTP request
+	url := fmt.Sprintf("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=%s", g.apiKey)
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
+	if err != nil {
+		return "", fmt.Errorf("failed to create request: %w", err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	// Send request
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", fmt.Errorf("failed to send request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	// Parse response
+	var geminiResp GeminiResponse
+	if err := json.NewDecoder(resp.Body).Decode(&geminiResp); err != nil {
+		return "", fmt.Errorf("failed to decode response: %w", err)
+	}
+
+	if len(geminiResp.Candidates) == 0 || len(geminiResp.Candidates[0].Content.Parts) == 0 {
+		return "", fmt.Errorf("no content generated")
+	}
+
+	return geminiResp.Candidates[0].Content.Parts[0].Text, nil
 }
 
-// applyGrayscale converts the image to grayscale
-func applyGrayscale(img *image.RGBA) {
-	bounds := img.Bounds()
-	width := bounds.Max.X
-	height := bounds.Max.Y
+// Helper functions for image generation
+func generateMoodColor(mood string) color.Color {
+	colors := map[string]color.RGBA{
+		"happy":    {R: 255, G: 255, B: 0, A: 255},   // Yellow
+		"sad":      {R: 0, G: 0, B: 255, A: 255},     // Blue
+		"angry":    {R: 255, G: 0, B: 0, A: 255},     // Red
+		"calm":     {R: 0, G: 255, B: 0, A: 255},     // Green
+		"excited":  {R: 255, G: 0, B: 255, A: 255},   // Magenta
+	}
 
-	for y := 0; y < height; y++ {
-		for x := 0; x < width; x++ {
-			r, g, b, a := img.At(x, y).RGBA()
-			gray := uint16((r + g + b) / 3)
-			img.Set(x, y, color.RGBA64{gray, gray, gray, uint16(a)})
+	if c, exists := colors[mood]; exists {
+		return c
+	}
+	return color.RGBA{R: 128, G: 128, B: 128, A: 255} // Default to gray
+}
+
+func colorToGrayscale(c color.Color) color.Color {
+	r, g, b, a := c.RGBA()
+	gray := uint8((r + g + b) / 3 >> 8)
+	return color.RGBA{R: gray, G: gray, B: gray, A: uint8(a >> 8)}
+}
+
+func drawShape(img *image.RGBA, x, y, size int, c color.Color) {
+	for i := x - size/2; i < x+size/2; i++ {
+		for j := y - size/2; j < y+size/2; j++ {
+			if i >= 0 && i < img.Bounds().Dx() && j >= 0 && j < img.Bounds().Dy() {
+				img.Set(i, j, c)
+			}
 		}
 	}
 }

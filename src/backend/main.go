@@ -25,6 +25,11 @@ type GenerateImageResponse struct {
 	ImageURL string `json:"imageUrl"`
 }
 
+// GenerateASCIIArtResponse represents the response for ASCII art generation
+type GenerateASCIIArtResponse struct {
+	Art string `json:"art"`
+}
+
 func main() {
 	// Load configuration
 	cfg, err := config.Load()
@@ -55,6 +60,9 @@ func main() {
 	{
 		api.POST("/generate-image", func(c *gin.Context) {
 			handleGenerateImage(c, imgGen)
+		})
+		api.POST("/ascii-art", func(c *gin.Context) {
+			handleGenerateASCIIArt(c, imgGen)
 		})
 	}
 
@@ -90,6 +98,27 @@ func handleGenerateImage(c *gin.Context, imgGen *generator.ImageGenerator) {
 
 	response := GenerateImageResponse{
 		ImageURL: imageURL,
+	}
+
+	c.JSON(http.StatusOK, response)
+}
+
+func handleGenerateASCIIArt(c *gin.Context, imgGen *generator.ImageGenerator) {
+	var req GenerateImageRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Generate ASCII art using Gemini API
+	art, err := imgGen.GenerateASCIIArt(req.Mood)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate ASCII art: " + err.Error()})
+		return
+	}
+
+	response := GenerateASCIIArtResponse{
+		Art: art,
 	}
 
 	c.JSON(http.StatusOK, response)
