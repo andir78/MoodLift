@@ -12,14 +12,24 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  height: 100vh;
+  min-height: 100vh;
   padding: 20px;
   box-sizing: border-box;
 }
 
+/* Main content container for responsive layout */
+.main-content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 1200px;
+}
+
+/* Header styles */
 .header {
   text-align: center;
   margin-bottom: 40px;
+  width: 100%;
 }
 
 h1 {
@@ -35,12 +45,35 @@ p {
   margin: 0;
 }
 
+/* Content area for side-by-side layout */
+.content-area {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 20px;
+}
+
+/* Options panel */
+.options-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+/* Result panel */
+.result-panel {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
 /* Mood Selector */
 .mood-selector {
   display: flex;
   justify-content: space-between;
   width: 100%;
-  margin-bottom: 40px;
+  margin-bottom: 20px;
 }
 
 .mood-option {
@@ -81,7 +114,7 @@ p {
 /* Image Settings */
 .image-settings {
   width: 100%;
-  margin-bottom: 40px;
+  margin-bottom: 20px;
 }
 
 .slider-container {
@@ -129,6 +162,7 @@ p {
   width: 100%;
   display: flex;
   justify-content: center;
+  margin-bottom: 20px;
 }
 
 .generate-btn {
@@ -155,20 +189,9 @@ p {
   transform: scale(1);
 }
 
-/* Mobile-Responsive Design */
-@media (max-width: 600px) {
-  .mood-selector {
-    flex-direction: column;
-    gap: 20px;
-  }
-
-  .slider-container input {
-    width: 100%;
-  }
-
-  .generate-btn {
-    width: 100%;
-  }
+.generate-btn:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
 }
 
 .error-message {
@@ -191,11 +214,6 @@ p {
   max-height: 400px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.generate-btn:disabled {
-  background-color: #6c757d;
-  cursor: not-allowed;
 }
 
 .ascii-art-container {
@@ -221,4 +239,50 @@ p {
   overflow: visible;
   display: block;
   width: 100%;
+}
+
+/* Responsive layout for landscape screens */
+@media (min-width: 992px) {
+  .content-area {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+  
+  .options-panel {
+    width: 40%;
+    position: sticky;
+    top: 20px;
+  }
+  
+  .result-panel {
+    width: 60%;
+  }
+  
+  .ascii-art-container {
+    margin-top: 0;
+    height: calc(100vh - 200px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .ascii-art {
+    font-size: 1.4rem;
+  }
+}
+
+/* Mobile-Responsive Design */
+@media (max-width: 600px) {
+  .mood-selector {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .slider-container input {
+    width: 100%;
+  }
+
+  .generate-btn {
+    width: 100%;
+  }
 }
