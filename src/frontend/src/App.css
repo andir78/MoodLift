@@ -1,11 +1,10 @@
 /* General styles */
 body {
-  background: linear-gradient(135deg, #1a2a3a, #2c3e50);
+  background: linear-gradient(135deg, #2c3e50, #4a6e8f);
   color: #e0e0e0;
   font-family: 'Arial', sans-serif;
   margin: 0;
   padding: 0;
-  min-height: 100vh;
 }
 
 .App {
@@ -13,100 +12,83 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  min-height: 100vh;
-  padding: 40px 20px;
+  height: 100vh;
+  padding: 20px;
   box-sizing: border-box;
-  max-width: 1200px;
-  margin: 0 auto;
 }
 
 .header {
   text-align: center;
-  margin-bottom: 60px;
-  animation: fadeIn 0.8s ease-out;
+  margin-bottom: 40px;
 }
 
 h1 {
-  font-size: 3rem;
+  font-size: 2.5rem;
   font-weight: bold;
   color: #00bcd4;
-  margin-bottom: 15px;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  margin-bottom: 10px;
 }
 
 p {
   color: #e0e0e0;
-  font-size: 1.2rem;
+  font-size: 1rem;
   margin: 0;
-  opacity: 0.9;
 }
 
 /* Mood Selector */
 .mood-selector {
   display: flex;
-  justify-content: center;
-  gap: 20px;
+  justify-content: space-between;
   width: 100%;
-  margin-bottom: 60px;
-  flex-wrap: wrap;
+  margin-bottom: 40px;
 }
 
 .mood-option {
-  padding: 20px 40px;
+  padding: 15px 30px;
   border: 2px solid #00bcd4;
-  border-radius: 40px;
+  border-radius: 30px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease, background-color 0.3s ease;
   font-size: 1.5rem;
   color: #e0e0e0;
-  background-color: transparent;
-  min-width: 150px;
+  width: 80%;
+  max-width: 400px;
   text-align: center;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.mood-selector.column {
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
 }
 
 .mood-option:hover {
   background-color: #00bcd4;
   color: #121212;
-  transform: translateY(-3px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
 .mood-option.selected {
   background-color: #00bcd4;
   color: #121212;
-  transform: translateY(-3px) scale(1.05);
-  border: 2px solid #00bcd4;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  transform: scale(1.1);
 }
 
 .mood-option.selected:hover {
-  background-color: #00bcd4;
-  color: #121212;
-  transform: translateY(-3px) scale(1.05);
+  background-color: #00bcd4; /* Make sure the selected button stays the same color */
+  color: #121212; /* Ensure the selected button's text stays dark */
 }
 
 /* Image Settings */
 .image-settings {
   width: 100%;
-  margin-bottom: 60px;
-  background: rgba(255, 255, 255, 0.05);
-  padding: 30px;
-  border-radius: 20px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 40px;
 }
 
 .slider-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 30px;
-}
-
-.slider-container label {
-  font-size: 1.2rem;
-  margin-bottom: 15px;
-  color: #e0e0e0;
+  margin-bottom: 20px;
 }
 
 .slider-container input {
@@ -116,113 +98,75 @@ p {
   background-color: #34495e;
   border: none;
   outline: none;
-  height: 8px;
+  height: 5px;
   border-radius: 10px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  -webkit-appearance: none;
-}
-
-.slider-container input::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 20px;
-  height: 20px;
-  background: #00bcd4;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.slider-container input::-webkit-slider-thumb:hover {
-  transform: scale(1.2);
-  background: #00a8c5;
+  transition: background 0.3s ease;
 }
 
 .slider-container input:focus {
-  background: #34495e;
+  background: #00bcd4;
 }
 
-/* Generate Button */
-.generate-btn-container {
-  margin-top: 30px;
-}
-
-.generate-btn {
-  background-color: #00bcd4;
-  color: #121212;
-  border: none;
-  padding: 20px 40px;
-  font-size: 1.4rem;
-  border-radius: 40px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-weight: bold;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  min-width: 200px;
-}
-
-.generate-btn:hover {
-  background-color: #00a8c5;
-  transform: translateY(-3px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-}
-
-.generate-btn:active {
-  transform: translateY(1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* Grayscale Checkbox */
 .grayscale-checkbox {
   display: flex;
-  align-items: center;
   justify-content: center;
-  gap: 15px;
-  margin-top: 30px;
+  align-items: center;
+  margin-top: 10px;
 }
 
-.grayscale-checkbox input[type="checkbox"] {
-  width: 24px;
-  height: 24px;
-  cursor: pointer;
-  accent-color: #00bcd4;
+.grayscale-checkbox input {
+  margin-right: 10px;
 }
 
 .grayscale-checkbox label {
-  font-size: 1.2rem;
-  cursor: pointer;
+  font-size: 1.3rem;
   color: #e0e0e0;
 }
 
-/* Animations */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* Button Styles */
+.generate-btn-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
+.generate-btn {
+  background: linear-gradient(135deg, #00bcd4, #007c8c);
+  border: none;
+  padding: 15px 30px;
+  font-size: 1.3rem;
+  cursor: pointer;
+  border-radius: 8px;
+  color: #121212;
+  font-weight: bold;
+  transition: transform 0.3s, background 0.3s;
+  width: 80%;
+  max-width: 400px;
+}
+
+.generate-btn:hover {
+  background: linear-gradient(135deg, #0097a7, #007c8c);
+  transform: scale(1.05);
+}
+
+.generate-btn:active {
+  background: linear-gradient(135deg, #007c8c, #0097a7);
+  transform: scale(1);
+}
+
+/* Mobile-Responsive Design */
+@media (max-width: 600px) {
   .mood-selector {
     flex-direction: column;
-    align-items: center;
+    gap: 20px;
   }
 
-  .mood-option {
+  .slider-container input {
     width: 100%;
-    max-width: 300px;
   }
 
-  h1 {
-    font-size: 2.5rem;
-  }
-
-  .image-settings {
-    padding: 20px;
+  .generate-btn {
+    width: 100%;
   }
 }

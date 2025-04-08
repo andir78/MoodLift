@@ -1,29 +1,29 @@
-import React, { useState, ChangeEvent } from 'react';
-import './App.css';
+/// <reference types="react" />
+import { useState, ChangeEvent } from 'react';
+import './App.css'; // Import the external CSS file for styling
 
-export function App() {
-  const [mood, setMood] = useState('');
-  const [size, setSize] = useState(50); // Default size in percentage
-  const [grayscale, setGrayscale] = useState(false);
-  const [selectedMood, setSelectedMood] = useState('');
+type MoodType = 'Happy' | 'Calm' | 'Excited' | '';
 
-  const handleSizeChange = (event: ChangeEvent<HTMLInputElement>) => {
+const App = () => {
+  const [mood, setMood] = useState<MoodType>('');
+  const [size, setSize] = useState<number>(50); // Default size in percentage
+  const [grayscale, setGrayscale] = useState<boolean>(false);
+
+  const handleMoodSelect = (selectedMood: MoodType): void => {
+    setMood(selectedMood);
+  };
+
+  const handleSizeChange = (event: ChangeEvent<HTMLInputElement>): void => {
     setSize(Number(event.target.value));
   };
 
-  const handleGrayscaleChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleGrayscaleChange = (event: ChangeEvent<HTMLInputElement>): void => {
     setGrayscale(event.target.checked);
   };
 
-  const handleMoodSelection = (selectedMood: string) => {
-    setMood(selectedMood);
-    setSelectedMood(selectedMood);
-  };
-
-  const handleGenerateImage = () => {
-    // Logic for image generation will go here
+  const handleGenerateImage = (): void => {
     alert(
-      `Generating image with mood: ${selectedMood}, size: ${size}%, grayscale: ${grayscale}`
+      `Generating image with mood: ${mood}, size: ${size}%, grayscale: ${grayscale}`
     );
   };
 
@@ -34,17 +34,15 @@ export function App() {
         <p>Choose your mood and generate your personalized image.</p>
       </div>
 
-      <div className='mood-selector'>
-        <div className='mood-option' onClick={() => handleMoodSelection('Happy')}>
-          <span className={selectedMood === 'Happy' ? 'selected' : ''}>🙂 Happy</span>
+      <div className='mood-selector column'>
+        <div className={`mood-option ${mood === 'Happy' ? 'selected' : ''}`} onClick={() => handleMoodSelect('Happy')}>
+          <span>🙂 Happy</span>
         </div>
-        <div className='mood-option' onClick={() => handleMoodSelection('Calm')}>
-          <span className={selectedMood === 'Calm' ? 'selected' : ''}>😌 Calm</span>
+        <div className={`mood-option ${mood === 'Calm' ? 'selected' : ''}`} onClick={() => handleMoodSelect('Calm')}>
+          <span>😌 Calm</span>
         </div>
-        <div className='mood-option' onClick={() => handleMoodSelection('Excited')}>
-          <span className={selectedMood === 'Excited' ? 'selected' : ''}>
-            🤩 Excited
-          </span>
+        <div className={`mood-option ${mood === 'Excited' ? 'selected' : ''}`} onClick={() => handleMoodSelect('Excited')}>
+          <span>🤩 Excited</span>
         </div>
       </div>
 
@@ -77,6 +75,9 @@ export function App() {
       </div>
     </div>
   );
-}
+};
+
+// Log to console
+console.log('Hello console');
 
 export default App;
