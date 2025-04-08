@@ -24,4 +24,26 @@ export const generateImage = async (params: GenerateImageRequest): Promise<Gener
     }
     throw error;
   }
+};
+
+export interface GenerateMoodRequest {
+  mood: string;
+  size: number;
+  grayscale: boolean;
+}
+
+export interface GenerateMoodResponse {
+  art: string;
+}
+
+export const generateMoodArt = async (params: GenerateMoodRequest): Promise<GenerateMoodResponse> => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/api/ascii-art`, params);
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(error.response?.data?.message || 'Failed to generate mood art');
+    }
+    throw error;
+  }
 }; 
