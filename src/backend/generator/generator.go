@@ -13,19 +13,27 @@ import (
 
 // ImageGenerator handles the generation of mood-based images
 type ImageGenerator struct {
-	outputDir string
+	outputDir    string
+	geminiAPIKey string
 }
 
 // NewImageGenerator creates a new ImageGenerator instance
-func NewImageGenerator(outputDir string) (*ImageGenerator, error) {
+func NewImageGenerator(outputDir string, geminiAPIKey string) (*ImageGenerator, error) {
 	if err := os.MkdirAll(outputDir, 0755); err != nil {
 		return nil, fmt.Errorf("failed to create output directory: %w", err)
 	}
-	return &ImageGenerator{outputDir: outputDir}, nil
+	return &ImageGenerator{
+		outputDir:    outputDir,
+		geminiAPIKey: geminiAPIKey,
+	}, nil
 }
 
 // GenerateImage creates a new image based on the given parameters
 func (g *ImageGenerator) GenerateImage(mood string, size int, grayscale bool) (string, error) {
+	// TODO: Implement Gemini AI integration
+	// For now, we'll keep the existing image generation logic
+	// but we have the API key available in g.geminiAPIKey
+
 	// Create a new image with the specified size
 	width := 300 * size / 100
 	height := 300 * size / 100
@@ -33,7 +41,7 @@ func (g *ImageGenerator) GenerateImage(mood string, size int, grayscale bool) (s
 
 	// Generate colors based on mood
 	colors := getMoodColors(mood)
-	
+
 	// Fill the image with a gradient based on the mood
 	drawMoodGradient(img, colors)
 
@@ -65,9 +73,9 @@ func getMoodColors(mood string) []color.Color {
 	switch mood {
 	case "Happy":
 		return []color.Color{
-			color.RGBA{255, 223, 0, 255},   // Yellow
-			color.RGBA{255, 165, 0, 255},   // Orange
-			color.RGBA{255, 69, 0, 255},    // Red-Orange
+			color.RGBA{255, 223, 0, 255}, // Yellow
+			color.RGBA{255, 165, 0, 255}, // Orange
+			color.RGBA{255, 69, 0, 255},  // Red-Orange
 		}
 	case "Calm":
 		return []color.Color{
@@ -77,9 +85,9 @@ func getMoodColors(mood string) []color.Color {
 		}
 	case "Excited":
 		return []color.Color{
-			color.RGBA{255, 0, 0, 255},     // Red
-			color.RGBA{255, 127, 0, 255},   // Orange
-			color.RGBA{255, 255, 0, 255},   // Yellow
+			color.RGBA{255, 0, 0, 255},   // Red
+			color.RGBA{255, 127, 0, 255}, // Orange
+			color.RGBA{255, 255, 0, 255}, // Yellow
 		}
 	default:
 		return []color.Color{
@@ -121,4 +129,4 @@ func applyGrayscale(img *image.RGBA) {
 			img.Set(x, y, color.RGBA64{gray, gray, gray, uint16(a)})
 		}
 	}
-} 
+}

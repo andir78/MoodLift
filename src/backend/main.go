@@ -1,10 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"path/filepath"
 
+	"moodlift/config"
 	"moodlift/generator"
 
 	"github.com/gin-contrib/cors"
@@ -24,8 +26,14 @@ type GenerateImageResponse struct {
 }
 
 func main() {
+	// Load configuration
+	cfg, err := config.Load()
+	if err != nil {
+		log.Fatal("Failed to load configuration: ", err)
+	}
+
 	// Initialize the image generator
-	imgGen, err := generator.NewImageGenerator("static/images")
+	imgGen, err := generator.NewImageGenerator("static/images", cfg.GeminiAPIKey)
 	if err != nil {
 		log.Fatal("Failed to initialize image generator: ", err)
 	}
@@ -51,7 +59,8 @@ func main() {
 	}
 
 	// Start server
-	if err := router.Run(":5000"); err != nil {
+	serverAddr := fmt.Sprintf(":%s", cfg.Port)
+	if err := router.Run(serverAddr); err != nil {
 		log.Fatal("Failed to start server: ", err)
 	}
 }
@@ -70,8 +79,14 @@ func handleGenerateImage(c *gin.Context, imgGen *generator.ImageGenerator) {
 		return
 	}
 
+	// Get the port from the request
+	port := c.Request.Host
+	if port == "" {
+		port = "localhost:5000" // Default fallback
+	}
+
 	// Convert the file path to a URL with full server address
-	imageURL := "http://localhost:5000/static/images/" + filepath.Base(imagePath)
+	imageURL := fmt.Sprintf("http://%s/static/images/%s", port, filepath.Base(imagePath))
 
 	response := GenerateImageResponse{
 		ImageURL: imageURL,

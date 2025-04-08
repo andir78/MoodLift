@@ -1,6 +1,11 @@
 # Static files
 static/images/
 
+# Environment files
+.env
+.env.local
+.env.*.local
+
 # Go specific
 *.exe
 *.exe~
