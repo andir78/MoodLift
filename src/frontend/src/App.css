@@ -1,0 +1,228 @@
+/* General styles */
+body {
+  background: linear-gradient(135deg, #1a2a3a, #2c3e50);
+  color: #e0e0e0;
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+.App {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100vh;
+  padding: 40px 20px;
+  box-sizing: border-box;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 60px;
+  animation: fadeIn 0.8s ease-out;
+}
+
+h1 {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #00bcd4;
+  margin-bottom: 15px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+p {
+  color: #e0e0e0;
+  font-size: 1.2rem;
+  margin: 0;
+  opacity: 0.9;
+}
+
+/* Mood Selector */
+.mood-selector {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  width: 100%;
+  margin-bottom: 60px;
+  flex-wrap: wrap;
+}
+
+.mood-option {
+  padding: 20px 40px;
+  border: 2px solid #00bcd4;
+  border-radius: 40px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1.5rem;
+  color: #e0e0e0;
+  background-color: transparent;
+  min-width: 150px;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.mood-option:hover {
+  background-color: #00bcd4;
+  color: #121212;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.mood-option.selected {
+  background-color: #00bcd4;
+  color: #121212;
+  transform: translateY(-3px) scale(1.05);
+  border: 2px solid #00bcd4;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.mood-option.selected:hover {
+  background-color: #00bcd4;
+  color: #121212;
+  transform: translateY(-3px) scale(1.05);
+}
+
+/* Image Settings */
+.image-settings {
+  width: 100%;
+  margin-bottom: 60px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.slider-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.slider-container label {
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+  color: #e0e0e0;
+}
+
+.slider-container input {
+  width: 80%;
+  max-width: 400px;
+  margin-top: 10px;
+  background-color: #34495e;
+  border: none;
+  outline: none;
+  height: 8px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  -webkit-appearance: none;
+}
+
+.slider-container input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  background: #00bcd4;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.slider-container input::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  background: #00a8c5;
+}
+
+.slider-container input:focus {
+  background: #34495e;
+}
+
+/* Generate Button */
+.generate-btn-container {
+  margin-top: 30px;
+}
+
+.generate-btn {
+  background-color: #00bcd4;
+  color: #121212;
+  border: none;
+  padding: 20px 40px;
+  font-size: 1.4rem;
+  border-radius: 40px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: bold;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  min-width: 200px;
+}
+
+.generate-btn:hover {
+  background-color: #00a8c5;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.generate-btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Grayscale Checkbox */
+.grayscale-checkbox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 30px;
+}
+
+.grayscale-checkbox input[type="checkbox"] {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  accent-color: #00bcd4;
+}
+
+.grayscale-checkbox label {
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #e0e0e0;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .mood-selector {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .mood-option {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  h1 {
+    font-size: 2.5rem;
+  }
+
+  .image-settings {
+    padding: 20px;
+  }
+}
